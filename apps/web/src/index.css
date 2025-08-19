@@ -1,0 +1,203 @@
+/* web/src/index.css */
+:root {
+  color-scheme: light dark;
+  /* Design tokens */
+  --color-bg: #f7f7f7;
+  --color-surface: #ffffff;
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-primary: #2563eb; /* Indigo-600 */
+  --color-primary-hover: #1d4ed8;
+  --color-danger: #dc2626;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 6px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 16px 30px rgba(0,0,0,0.12);
+  --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.35);
+}
+
+/* Optional dark theme via data attribute on html: <html data-theme="dark"> */
+html[data-theme="dark"] {
+  --color-bg: #0b1020;
+  --color-surface: #0f162f;
+  --color-text: #e5e7eb;
+  --color-text-muted: #9ca3af;
+  --color-border: #1f2937;
+  --color-primary: #60a5fa; /* Lighter accent in dark mode */
+  --color-primary-hover: #93c5fd;
+}
+
+/* Modern CSS reset (minimal) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+p {
+  margin: 0 0 1rem;
+  color: var(--color-text);
+}
+small, .muted {
+  color: var(--color-text-muted);
+}
+
+/* Layout primitives */
+.container {
+  width: min(1100px, 100%);
+  margin-inline: auto;
+  padding: 1rem;
+}
+.stack > * + * {
+  margin-top: var(--stack-gap, 1rem);
+}
+.inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--inline-gap, 0.5rem);
+}
+.center {
+  display: grid;
+  place-items: center;
+}
+
+/* Card */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+}
+.card.elevated {
+  box-shadow: var(--shadow-md);
+}
+
+/* Buttons */
+.button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-weight: 600;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+.button:hover {
+  transform: translateY(-1px);
+}
+.button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.button.primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+.button.primary:hover {
+  background: var(--color-primary-hover);
+}
+.button.ghost {
+  background: transparent;
+  border-color: var(--color-border);
+}
+.button.danger {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+/* Inputs */
+.input, .select, .textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.input:focus, .select:focus, .textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+
+/* Form rows */
+.form-row {
+  display: grid;
+  gap: 0.75rem;
+}
+.form-row.inline {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Utilities */
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 0.75rem; }
+.mt-4 { margin-top: 1rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 1rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
+
+/* Tables (if needed later) */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.table th, .table td {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+.table tr:hover {
+  background: color-mix(in srgb, var(--color-surface) 90%, var(--color-primary) 10%);
+}

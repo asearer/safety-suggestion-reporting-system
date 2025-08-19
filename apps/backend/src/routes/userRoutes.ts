@@ -3,6 +3,7 @@ import { UserController } from "../controllers/userController";
 import { validateUserRegistration, validateUserLogin } from "../utils/validators";
 import { authMiddleware } from "../middleware/authMiddleware";
 
+
 const router = express.Router();
 const userController = new UserController();
 
