@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import ReportCard from "../components/ReportCard";
 import apiService from "../services/apiService";
-import {Route, Router } from "react-router-dom";
-import ReactDOM from "react-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { createRoot } from "react-dom/client";
 import ReportForm from "./ReportForm";
 
 type ReportStatus = "pending" | "in_review" | "resolved";
@@ -65,15 +65,17 @@ export default Dashboard;
 
 const App: React.FC = () => {
   return (
-    <Router location={""} navigator={undefined}>
+    <BrowserRouter>
+      <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/report-form" element={<ReportForm />} />
-    </Router>
+      </Routes>
+    </BrowserRouter>
   );
 };
 
-const root = ReactDOM.createRoot(
+const root = createRoot(
   document.getElementById("root") as HTMLElement,
 );
 root.render(
