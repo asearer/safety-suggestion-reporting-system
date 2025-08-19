@@ -4,15 +4,15 @@ import { validateUserRegistration, validateUserLogin } from "../utils/validators
 import { authMiddleware } from "../middleware/authMiddleware";
 import { UserService } from "../services/userService";
 
-const router = express.Router();
-const userController = new UserController(new UserService());
+/**
+ * Client placeholder for server routes to prevent bundling server-only code.
+ */
+const noopRouter = {
+  get: () => noopRouter,
+  post: () => noopRouter,
+  put: () => noopRouter,
+  delete: () => noopRouter,
+  use: () => noopRouter,
+};
 
-// Public routes
-router.post("/register", validateUserRegistration, (req, res) => userController.registerUser(req, res));
-router.post("/login", validateUserLogin, (req, res) => userController.loginUser(req, res));
-
-// Protected routes
-router.get("/profile", authMiddleware, (req, res) => userController.getUserProfile(req, res));
-router.put("/profile", authMiddleware, (req, res) => userController.updateUserProfile(req, res));
-
-export default router;
+export default noopRouter;
