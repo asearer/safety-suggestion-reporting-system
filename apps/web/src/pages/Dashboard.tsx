@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from "react";
 import ReportCard from "../components/ReportCard";
 import apiService from "../services/apiService";
+import {Route, Router } from "react-router-dom";
+import ReactDOM from "react-dom";
+import ReportForm from "./ReportForm";
 
 type ReportStatus = "pending" | "in_review" | "resolved";
 
@@ -59,23 +62,13 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-// import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import ReportForm from "./pages/ReportForm";
-import "./index.css";
-// import demoAuthRouter from "./routes/demoAuth";
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Routes>
+    <Router location={""} navigator={undefined}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/report-form" element={<ReportForm />} />
-      </Routes>
     </Router>
   );
 };
