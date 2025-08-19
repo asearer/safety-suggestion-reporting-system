@@ -1,6 +1,6 @@
 // backend/src/services/userService.ts
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
+import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
