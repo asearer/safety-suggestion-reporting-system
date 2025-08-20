@@ -6,6 +6,8 @@ export interface AuthenticatedRequest extends Request {
   user?: TokenPayload;
 }
 
+export type JwtPayload = TokenPayload;
+
 export interface TokenPayload extends JWTLibPayload {
   id: number;
 }

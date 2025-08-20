@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { UserService } from "../services/userService";
 import { validationResult } from "express-validator";
+import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
 export class UserController {
     private userService: UserService;
@@ -9,7 +10,8 @@ export class UserController {
         this.userService = userService;
     }
 
-    async registerUser(req: Request, res: Response): Promise<Response> {
+    // Register a new user (no user property needed)
+    async registerUser(req: AuthenticatedRequest, res: Response): Promise<Response> {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -24,7 +26,8 @@ export class UserController {
         }
     }
 
-    async loginUser(req: Request, res: Response): Promise<Response> {
+    // Login user (no user property needed)
+    async loginUser(req: AuthenticatedRequest, res: Response): Promise<Response> {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -39,8 +42,13 @@ export class UserController {
         }
     }
 
-    async getUserProfile(req: Request, res: Response): Promise<Response> {
+    // Get logged-in user's profile
+    async getUserProfile(req: AuthenticatedRequest, res: Response): Promise<Response> {
         try {
+            if (!req.user) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
             const user = await this.userService.getUserProfile(req.user.id);
             return res.status(200).json(user);
         } catch (error) {
@@ -49,13 +57,18 @@ export class UserController {
         }
     }
 
-    async updateUserProfile(req: Request, res: Response): Promise<Response> {
+    // Update logged-in user's profile
+    async updateUserProfile(req: AuthenticatedRequest, res: Response): Promise<Response> {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
 
         try {
+            if (!req.user) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
             const updatedUser = await this.userService.updateUserProfile(req.user.id, req.body);
             return res.status(200).json(updatedUser);
         } catch (error) {
