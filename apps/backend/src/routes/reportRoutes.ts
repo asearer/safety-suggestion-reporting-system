@@ -8,6 +8,11 @@ const router = express.Router();
 const reportController = new ReportController(new ReportService());
 
 // Create a new report
+/**
+ * @route POST /api/reports
+ * @desc Create a new safety report
+ * @access Private
+ */
 router.post(
     "/",
     authMiddleware,
@@ -16,6 +21,11 @@ router.post(
 );
 
 // Get all reports for the authenticated user
+/**
+ * @route GET /api/reports
+ * @desc Get all reports for the current user
+ * @access Private
+ */
 router.get(
     "/",
     authMiddleware,
@@ -23,6 +33,11 @@ router.get(
 );
 
 // Update a report
+/**
+ * @route PUT /api/reports/:id
+ * @desc Update an existing report
+ * @access Private
+ */
 router.put(
     "/:id",
     authMiddleware,
@@ -31,6 +46,11 @@ router.put(
 );
 
 // Delete a report
+/**
+ * @route DELETE /api/reports/:id
+ * @desc Delete a report
+ * @access Private
+ */
 router.delete(
     "/:id",
     authMiddleware,

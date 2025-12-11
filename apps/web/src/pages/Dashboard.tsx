@@ -1,10 +1,6 @@
-// @ts-ignore
 import React, { useEffect, useState } from "react";
 import ReportCard from "../components/ReportCard";
 import apiService from "../services/apiService";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { createRoot } from "react-dom/client";
-import ReportForm from "./ReportForm";
 
 type ReportStatus = "pending" | "in_review" | "resolved";
 
@@ -62,24 +58,3 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-
-const App: React.FC = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/report-form" element={<ReportForm />} />
-      </Routes>
-    </BrowserRouter>
-  );
-};
-
-const root = createRoot(
-  document.getElementById("root") as HTMLElement,
-);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);

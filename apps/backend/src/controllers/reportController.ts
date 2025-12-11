@@ -3,6 +3,9 @@ import { AuthenticatedRequest, JwtPayload } from "../middleware/authMiddleware";
 import { ReportService } from "../services/reportService";
 import { validationResult } from "express-validator";
 
+/**
+ * Controller for handling report-related operations.
+ */
 export class ReportController {
   private reportService: ReportService;
 
@@ -10,17 +13,21 @@ export class ReportController {
     this.reportService = reportService;
   }
 
-  async createReport(req: Request, res: Response): Promise<Response> {
+  /**
+   * Create a new report.
+   * @route POST /api/reports
+   */
+  async createReport(req: AuthenticatedRequest, res: Response): Promise<Response> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
     try {
-      const report = await this.reportService.createReport(
-        req.body,
-        ((req as AuthenticatedRequest).user as JwtPayload)?.id,
-      );
+      if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      const report = await this.reportService.createReport(req.body, req.user.id);
       return res.status(201).json(report);
     } catch (error) {
       console.error("Error creating report:", error);
@@ -28,11 +35,16 @@ export class ReportController {
     }
   }
 
-  async getReports(req: Request, res: Response): Promise<Response> {
+  /**
+   * Get all reports for the current user.
+   * @route GET /api/reports
+   */
+  async getReports(req: AuthenticatedRequest, res: Response): Promise<Response> {
     try {
-      const reports = await this.reportService.getReports(
-        ((req as AuthenticatedRequest).user as JwtPayload)?.id,
-      );
+      if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      const reports = await this.reportService.getReports(req.user.id);
       return res.status(200).json(reports);
     } catch (error) {
       console.error("Error fetching reports:", error);
@@ -40,21 +52,27 @@ export class ReportController {
     }
   }
 
-  async updateReport(req: Request, res: Response): Promise<Response> {
+  /**
+   * Update a report.
+   * @route PUT /api/reports/:id
+   */
+  async updateReport(req: AuthenticatedRequest, res: Response): Promise<Response> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
     try {
-      const updatedReport = await this.reportService.updateReport(
-        parseInt((req as AuthenticatedRequest).params.id, 10),
-        req.body,
-        ((req as AuthenticatedRequest).user as JwtPayload)?.id,
-      );
-      if (!updatedReport) {
-        return res.status(404).json({ message: "Report not found" });
+      if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
       }
+      const reportId = parseInt(req.params.id);
+      const updatedReport = await this.reportService.updateReport(reportId, req.body, req.user.id);
+
+      if (!updatedReport) {
+        return res.status(404).json({ message: "Report not found or unauthorized" });
+      }
+
       return res.status(200).json(updatedReport);
     } catch (error) {
       console.error("Error updating report:", error);
@@ -62,16 +80,23 @@ export class ReportController {
     }
   }
 
-  async deleteReport(req: Request, res: Response): Promise<Response> {
+  /**
+   * Delete a report.
+   * @route DELETE /api/reports/:id
+   */
+  async deleteReport(req: AuthenticatedRequest, res: Response): Promise<Response> {
     try {
-      const deleted = await this.reportService.deleteReport(
-        parseInt((req as AuthenticatedRequest).params.id, 10),
-        ((req as AuthenticatedRequest).user as JwtPayload)?.id,
-      );
-      if (!deleted) {
-        return res.status(404).json({ message: "Report not found" });
+      if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
       }
-      return res.status(204).send();
+      const reportId = parseInt(req.params.id);
+      const deletedReport = await this.reportService.deleteReport(reportId, req.user.id);
+
+      if (!deletedReport) {
+        return res.status(404).json({ message: "Report not found or unauthorized" });
+      }
+
+      return res.status(200).json({ message: "Report deleted successfully" });
     } catch (error) {
       console.error("Error deleting report:", error);
       return res.status(500).json({ message: "Internal server error" });

@@ -46,7 +46,7 @@ export function watchLocation(
       timeInterval: 1000,
       distanceInterval: 1,
     },
-    (location) => {
+    (location: Location.LocationObject) => {
       callback({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,

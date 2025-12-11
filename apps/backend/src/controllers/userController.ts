@@ -10,7 +10,10 @@ export class UserController {
         this.userService = userService;
     }
 
-    // Register a new user (no user property needed)
+    /**
+     * Register a new user.
+     * @route POST /api/users/register
+     */
     async registerUser(req: AuthenticatedRequest, res: Response): Promise<Response> {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -26,7 +29,10 @@ export class UserController {
         }
     }
 
-    // Login user (no user property needed)
+    /**
+     * Authenticate user and get token.
+     * @route POST /api/users/login
+     */
     async loginUser(req: AuthenticatedRequest, res: Response): Promise<Response> {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -42,7 +48,10 @@ export class UserController {
         }
     }
 
-    // Get logged-in user's profile
+    /**
+     * Get current user profile.
+     * @route GET /api/users/profile
+     */
     async getUserProfile(req: AuthenticatedRequest, res: Response): Promise<Response> {
         try {
             if (!req.user) {
@@ -57,7 +66,10 @@ export class UserController {
         }
     }
 
-    // Update logged-in user's profile
+    /**
+     * Update current user profile.
+     * @route PUT /api/users/profile
+     */
     async updateUserProfile(req: AuthenticatedRequest, res: Response): Promise<Response> {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
