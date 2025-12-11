@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Web application for the Safety Suggestions Reporting System",
   "main": "src/index.tsx",
+  "proxy": "http://localhost:4000",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

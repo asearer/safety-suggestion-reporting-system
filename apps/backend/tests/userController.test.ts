@@ -1,14 +1,24 @@
 import { Request, Response } from "express"; // Importing types for Express request and response objects
 import { UserController } from "../src/controllers/userController"; // Importing the UserController to test its methods
 import { UserService } from "../src/services/userService"; // Importing the UserService to mock its behavior
+import { AuthenticatedRequest } from "../src/middleware/authMiddleware";
 
 jest.mock("../src/services/userService"); // Mocking the UserService to isolate the controller logic
+jest.mock("express-validator", () => ({
+  validationResult: jest.fn(() => ({
+    isEmpty: jest.fn(() => true),
+    array: jest.fn(() => []),
+  })),
+}));
+
+import { validationResult } from "express-validator";
+
 
 describe("UserController", () => {
   // Grouping all tests related to the UserController
   let userController: UserController; // Instance of UserController to be tested
   let userService: jest.Mocked<UserService>; // Mocked instance of UserService
-  let mockRequest: Partial<Request>; // Partial mock of Express Request object
+  let mockRequest: Partial<AuthenticatedRequest>; // Partial mock of AuthenticatedRequest object
   let mockResponse: Partial<Response>; // Partial mock of Express Response object
   let mockNext: jest.Mock; // Mock function for the next middleware
 
@@ -30,7 +40,7 @@ describe("UserController", () => {
     // Tests for the registerUser method
     it("should return 201 and the created user when registration is successful", async () => {
       // Test for successful user registration
-      const mockUser = { id: 1, name: "John Doe", email: "john@example.com" }; // Mock user data to simulate a successful registration
+      const mockUser = { id: 1, name: "John Doe", email: "john@example.com", createdAt: new Date(), updatedAt: new Date() }; // Mock user data
       userService.registerUser.mockResolvedValue(mockUser);
 
       mockRequest.body = {
@@ -49,7 +59,28 @@ describe("UserController", () => {
       expect(mockResponse.json).toHaveBeenCalledWith(mockUser); // Verifying the response contains the created user data
     });
 
+    it("should return 400 when validation fails", async () => {
+      (validationResult as unknown as jest.Mock).mockReturnValue({
+        isEmpty: jest.fn(() => false),
+        array: jest.fn(() => [{ msg: "Invalid input" }]),
+      });
+
+      mockRequest.body = { email: "invalid-email" };
+
+      await userController.registerUser(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({ errors: expect.any(Array) });
+    });
+
     it("should return 500 when an error occurs during registration", async () => {
+      (validationResult as unknown as jest.Mock).mockReturnValue({
+        isEmpty: jest.fn(() => true),
+        array: jest.fn(() => []),
+      });
       userService.registerUser.mockRejectedValue(
         new Error("Registration failed"),
       );
@@ -113,13 +144,13 @@ describe("UserController", () => {
 
   describe("getUserProfile", () => {
     it("should return 200 and the user profile when successful", async () => {
-      const mockUser = { id: 1, name: "John Doe", email: "john@example.com" };
+      const mockUser = { id: 1, name: "John Doe", email: "john@example.com", createdAt: new Date(), updatedAt: new Date() };
       userService.getUserProfile.mockResolvedValue(mockUser);
 
       mockRequest.user = { id: 1 };
 
       await userController.getUserProfile(
-        mockRequest as Request,
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response,
       );
 
@@ -136,7 +167,7 @@ describe("UserController", () => {
       mockRequest.user = { id: 1 };
 
       await userController.getUserProfile(
-        mockRequest as Request,
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response,
       );
 
@@ -154,6 +185,8 @@ describe("UserController", () => {
         id: 1,
         name: "John Updated",
         email: "john.updated@example.com",
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       userService.updateUserProfile.mockResolvedValue(mockUpdatedUser);
 
@@ -164,7 +197,7 @@ describe("UserController", () => {
       };
 
       await userController.updateUserProfile(
-        mockRequest as Request,
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response,
       );
 
@@ -188,7 +221,7 @@ describe("UserController", () => {
       };
 
       await userController.updateUserProfile(
-        mockRequest as Request,
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response,
       );
 

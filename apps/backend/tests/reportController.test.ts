@@ -1,13 +1,23 @@
 import { Request, Response } from "express"; // Importing types for Express request and response objects
 import { ReportController } from "../src/controllers/reportController"; // Importing the ReportController class to test its methods
 import { ReportService } from "../src/services/reportService"; // Importing the ReportService to mock its behavior during tests
+import { AuthenticatedRequest } from "../src/middleware/authMiddleware";
 
 jest.mock("../src/services/reportService"); // Mocking the ReportService to isolate the controller logic from service dependencies
+jest.mock("express-validator", () => ({
+  validationResult: jest.fn(() => ({
+    isEmpty: jest.fn(() => true),
+    array: jest.fn(() => []),
+  })),
+}));
+
+import { validationResult } from "express-validator";
+
 
 describe("ReportController", () => {
   let reportController: ReportController; // Instance of the ReportController to be tested
   let mockReportService: jest.Mocked<ReportService>; // Mocked instance of the ReportService
-  let mockRequest: Partial<Request>; // Partial mock of the Express Request object
+  let mockRequest: Partial<AuthenticatedRequest>; // Partial mock of the AuthenticatedRequest object
   let mockResponse: Partial<Response>; // Partial mock of the Express Response object
   let mockNext: jest.Mock; // Mock function for the next middleware in the Express pipeline
 
@@ -21,7 +31,17 @@ describe("ReportController", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
+    mockResponse = {
+      // Initializing a mock response object with mocked methods
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
     mockNext = jest.fn();
+
+    (validationResult as unknown as jest.Mock).mockReturnValue({
+      isEmpty: jest.fn(() => true),
+      array: jest.fn(() => []),
+    });
   });
 
   describe("createReport", () => {
@@ -38,10 +58,11 @@ describe("ReportController", () => {
       mockReportService.createReport.mockResolvedValue({
         id: 1,
         ...reportData,
+        status: "pending", createdAt: new Date(), updatedAt: new Date(), userId: 1
       }); // Mocking the service method to return a resolved promise with report data
 
       await reportController.createReport(
-        mockRequest as Request,
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response,
       );
 
@@ -50,16 +71,21 @@ describe("ReportController", () => {
         1,
       ); // Verifying that the service method was called with the correct arguments
       expect(mockResponse.status).toHaveBeenCalledWith(201); // Verifying that the response status was set to 201
-      expect(mockResponse.json).toHaveBeenCalledWith({ id: 1, ...reportData }); // Verifying that the response JSON contains the created report data
+      expect(mockResponse.json).toHaveBeenCalledWith(expect.objectContaining({ id: 1, ...reportData })); // Verifying that the response JSON contains the created report data
     });
 
     it("should return 400 if validation fails", async () => {
       // Test case for validation failure during report creation
+      (validationResult as unknown as jest.Mock).mockReturnValue({
+        isEmpty: jest.fn(() => false),
+        array: jest.fn(() => [{ msg: "Invalid input" }]),
+      });
+
       mockRequest.body = {}; // Mocking an empty request body to simulate validation failure
       mockRequest.user = { id: 1 };
 
       await reportController.createReport(
-        mockRequest as Request,
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response,
       );
 
@@ -84,7 +110,7 @@ describe("ReportController", () => {
       ); // Mocking the service method to throw an error
 
       await reportController.createReport(
-        mockRequest as Request,
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response,
       );
 
@@ -104,6 +130,7 @@ describe("ReportController", () => {
           description: "Description 1",
           location: "Location 1",
           status: "pending",
+          createdAt: new Date(), updatedAt: new Date()
         },
         {
           id: 2,
@@ -111,14 +138,15 @@ describe("ReportController", () => {
           description: "Description 2",
           location: "Location 2",
           status: "resolved",
+          createdAt: new Date(), updatedAt: new Date()
         },
       ];
       mockRequest.user = { id: 1 };
 
-      mockReportService.getReports.mockResolvedValue(reports);
+      mockReportService.getReports.mockResolvedValue(reports as any);
 
       await reportController.getReports(
-        mockRequest as Request,
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response,
       );
 
@@ -135,7 +163,7 @@ describe("ReportController", () => {
       );
 
       await reportController.getReports(
-        mockRequest as Request,
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response,
       );
 

@@ -14,7 +14,7 @@ const Button: React.FC<ButtonProps> = ({ label, onClick, disabled = false, type 
             type={type}
             onClick={onClick}
             disabled={disabled}
-            className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400 ${className}`}
+            className={`button ${className} ${disabled ? "disabled" : "primary"}`}
         >
             {label}
         </button>

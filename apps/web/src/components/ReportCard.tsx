@@ -10,12 +10,18 @@ interface ReportCardProps {
 
 const ReportCard: React.FC<ReportCardProps> = ({ title, description, location, status, createdAt }) => {
     return (
-        <div className="report-card">
-            <h3 className="report-title">{title}</h3>
-            <p className="report-description">{description}</p>
-            <p className="report-location"><strong>Location:</strong> {location}</p>
-            <p className="report-status"><strong>Status:</strong> {status}</p>
-            <p className="report-date"><strong>Created At:</strong> {new Date(createdAt).toLocaleDateString()}</p>
+        <div className="card elevated">
+            <h3>{title}</h3>
+            <p>{description}</p>
+            <div className="mt-2">
+                <small className="muted">Location: {location}</small>
+            </div>
+            <div className="mt-1">
+                <small className="muted">Status: <strong>{status}</strong></small>
+            </div>
+            <div className="mt-1">
+                <small className="muted">Created: {new Date(createdAt).toLocaleDateString()}</small>
+            </div>
         </div>
     );
 };
