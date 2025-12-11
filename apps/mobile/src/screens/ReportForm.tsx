@@ -1,10 +1,25 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import QRScannerModal from "../components/QRScannerModal";
 
 const ReportForm: React.FC = () => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [location, setLocation] = useState("");
+    const [isScannerVisible, setIsScannerVisible] = useState(false);
+
+    const handleScan = (data: string) => {
+        try {
+            const parsedData = JSON.parse(data);
+            if (parsedData.name) {
+                setLocation(parsedData.name);
+            } else {
+                Alert.alert("Invalid QR Code", "The scanned code does not contain valid location data.");
+            }
+        } catch (error) {
+            Alert.alert("Error", "Failed to parse QR code data.");
+        }
+    };
 
     const handleSubmit = () => {
         if (!title || !description || !location) {
@@ -32,11 +47,19 @@ const ReportForm: React.FC = () => {
                 onChangeText={setDescription}
                 multiline
             />
-            <TextInput
-                style={styles.input}
-                placeholder="Location"
-                value={location}
-                onChangeText={setLocation}
+            <View style={styles.row}>
+                <TextInput
+                    style={[styles.input, styles.locationInput]}
+                    placeholder="Location"
+                    value={location}
+                    onChangeText={setLocation}
+                />
+                <Button title="Scan" onPress={() => setIsScannerVisible(true)} />
+            </View>
+            <QRScannerModal
+                visible={isScannerVisible}
+                onClose={() => setIsScannerVisible(false)}
+                onScan={handleScan}
             />
             <Button title="Submit Report" onPress={handleSubmit} />
         </View>
@@ -60,6 +83,16 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 10,
         marginBottom: 15,
+    },
+    row: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 15,
+    },
+    locationInput: {
+        flex: 1,
+        marginBottom: 0,
+        marginRight: 10,
     },
 });
 
