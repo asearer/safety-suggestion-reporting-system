@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Modal, StyleSheet, Button, Dimensions } from 'react-native';
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
+import React, { useState } from 'react';
+import { View, Text, Modal, StyleSheet, Button } from 'react-native';
+import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 
 interface QRScannerModalProps {
     visible: boolean;
@@ -9,49 +9,45 @@ interface QRScannerModalProps {
 }
 
 const QRScannerModal: React.FC<QRScannerModalProps> = ({ visible, onClose, onScan }) => {
-    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+    const [permission, requestPermission] = useCameraPermissions();
     const [scanned, setScanned] = useState(false);
 
-    useEffect(() => {
-        const getBarCodeScannerPermissions = async () => {
-            const { status } = await BarCodeScanner.requestPermissionsAsync();
-            setHasPermission(status === 'granted');
-        };
-
-        if (visible) {
-            getBarCodeScannerPermissions();
-            setScanned(false);
-        }
-    }, [visible]);
-
-    const handleBarCodeScanned = ({ type, data }: BarCodeScannerResult) => {
-        if (scanned) return;
-        setScanned(true);
-        onScan(data);
-        onClose();
-    };
-
-    if (hasPermission === null) {
+    if (!permission) {
+        // Camera permissions are still loading
         return <View />;
     }
 
-    if (hasPermission === false) {
+    if (!permission.granted) {
         return (
             <Modal visible={visible} animationType="slide">
                 <View style={styles.container}>
-                    <Text>No access to camera</Text>
+                    <Text style={styles.message}>We need your permission to show the camera</Text>
+                    <Button onPress={requestPermission} title="grant permission" />
                     <Button title="Close" onPress={onClose} />
                 </View>
             </Modal>
         );
     }
 
+    const handleBarcodeScanned = (scanningResult: BarcodeScanningResult) => {
+        if (scanned) return;
+        setScanned(true);
+        onScan(scanningResult.data);
+        onClose();
+        // Reset scanned state after a short delay so the user can scan again if they re-open the modal immediately
+        setTimeout(() => setScanned(false), 1000);
+    };
+
     return (
-        <Modal visible={visible} animationType="slide">
+        <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
             <View style={styles.container}>
-                <BarCodeScanner
-                    onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+                <CameraView
                     style={StyleSheet.absoluteFillObject}
+                    facing="back"
+                    onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
+                    barcodeScannerSettings={{
+                        barcodeTypes: ["qr"],
+                    }}
                 />
                 <View style={styles.overlay}>
                     <Button title="Cancel" onPress={onClose} color="#FF0000" />
@@ -64,9 +60,13 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({ visible, onClose, onSca
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'column',
         justifyContent: 'center',
         backgroundColor: '#000',
+    },
+    message: {
+        textAlign: 'center',
+        paddingBottom: 10,
+        color: 'white',
     },
     overlay: {
         position: 'absolute',
