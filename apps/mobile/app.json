@@ -1,0 +1,18 @@
+{
+    "expo": {
+        "name": "safety-suggestions-mobile",
+        "slug": "safety-suggestions-mobile",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "userInterfaceStyle": "light",
+        "ios": {
+            "supportsTablet": true
+        },
+        "android": {
+            "adaptiveIcon": {
+                "backgroundColor": "#ffffff"
+            }
+        },
+        "web": {}
+    }
+}

@@ -11,14 +11,24 @@ interface Report {
     createdAt: string;
 }
 
-const Dashboard: React.FC = () => {
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../navigation/AppNavigator";
+import { Button } from "react-native";
+
+interface DashboardProps {
+    navigation: StackNavigationProp<RootStackParamList, "Dashboard">;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ navigation }) => {
     const [reports, setReports] = useState<Report[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchReports = async () => {
             try {
-                const data = await apiService.getReports();
+                // Mock API call failure gracefully or use real API if available
+                // For now we might just want to show empty list if API fails
+                const data = await apiService.getReports().catch(() => []);
                 setReports(data);
             } catch (error) {
                 console.error("Error fetching reports:", error);
@@ -41,6 +51,12 @@ const Dashboard: React.FC = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Safety Reports</Text>
+            <View style={{ marginBottom: 20 }}>
+                <Button
+                    title="Submit New Report"
+                    onPress={() => navigation.navigate("ReportForm")}
+                />
+            </View>
             <FlatList
                 data={reports}
                 keyExtractor={(item) => item.id.toString()}
@@ -53,6 +69,7 @@ const Dashboard: React.FC = () => {
                         <Text style={styles.date}>Created At: {new Date(item.createdAt).toLocaleDateString()}</Text>
                     </View>
                 )}
+                ListEmptyComponent={<Text>No reports found.</Text>}
             />
         </View>
     );

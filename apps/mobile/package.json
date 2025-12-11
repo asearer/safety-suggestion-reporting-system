@@ -27,7 +27,8 @@
     "react-native-screens": "~3.20.0",
     "react-native-web": "~0.18.10",
     "react-router-dom": "6.8.0",
-    "expo-barcode-scanner": "~12.3.2"
+    "expo-barcode-scanner": "~12.3.2",
+    "@expo/webpack-config": "^18.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
