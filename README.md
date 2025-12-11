@@ -23,7 +23,7 @@ This project is a **scalable, modern platform** for reporting and tracking safet
    ```bash
    cd backend && npm install
    cd ../web && npm install
-   cd ../mobile && npm install
+   cd ../mobile && npm install --legacy-peer-deps
    ```
 
 3. Start the database and services with Docker Compose:
@@ -42,7 +42,7 @@ This project is a **scalable, modern platform** for reporting and tracking safet
 ### Running Apps
 - **Backend API**: `cd backend && npm run dev`
 - **Web Dashboard**: `cd web && npm start`
-- **Mobile App**: `cd mobile && npm start`
+- **Mobile App**: `cd mobile && npx expo start --clear --tunnel` (Recommended for physical devices)
 
 ### Scripts
 - `scripts/db_migrate.sh` – Run database migrations
