@@ -49,11 +49,35 @@ This project is a **scalable, modern platform** for reporting and tracking safet
 - `scripts/deploy.sh` – Deployment pipeline script
 - `scripts/generate_qr_codes.ts` – Generate QR codes for location tagging
 
+## QR Code Feature
+The system supports location tagging via QR codes.
+
+1.  **Generate QR Codes**:
+    Run the generation script to create QR codes for your locations:
+    ```bash
+    npx ts-node tooling/scripts/generate_qr_codes.ts
+    ```
+    This will generate PNG files in `tooling/qr_codes`.
+
+2.  **Scan in Mobile App**:
+    - Open the mobile app.
+    - Go to **Submit New Report**.
+    - Tap **Scan** next to the Location field.
+    - Scan a generated QR code to auto-fill the location.
+
+### Mobile App Web Support
+The mobile app can now be run in the browser using Expo Web:
+```bash
+cd mobile && npm run web
+```
+*Note: QR scanning is simulated or limited in the browser environment.*
+
 ### Next Steps
-- Flesh out backend routes, models, and services
-- Implement UI for web & mobile
-- Add authentication and role-based access
-- Configure CI/CD pipelines
+- [ ] Flesh out backend routes, models, and services
+- [x] Implement basic UI for mobile (Report Form, QR Scanner)
+- [ ] Implement UI for web dashboard
+- [ ] Add authentication and role-based access
+- [ ] Configure CI/CD pipelines
 
 ---
 🚀 Built with TypeScript everywhere for type safety and maintainability.
